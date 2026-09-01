@@ -1,0 +1,57 @@
+services:
+  # Stockage Physique : MinIO
+  minio:
+    image: minio/minio
+    container_name: cystis-minio
+    ports:
+      - "9000:9000" 
+      - "9001:9001" 
+    env_file:
+      - ../backend/.env # 🔗 On lit le .env du backend
+    environment:
+      # On mappe les variables de ton .env vers celles attendues par MinIO
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./data/minio:/data
+    restart: unless-stopped
+
+  # Base de Données : SurrealDB
+  surrealdb:
+    image: surrealdb/surrealdb:latest
+    container_name: cystis-surrealdb
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../backend/.env # 🔗 On importe automatiquement SURREAL_USER et SURREAL_PASS
+    command: start --log trace --bind 0.0.0.0:8000 surrealkv://data/database
+    volumes:
+      - ./data/surrealdb:/data
+    restart: unless-stopped
+
+  # Identité : Casdoor
+  casdoor-db:
+    image: mysql:8.0
+    container_name: cystis-casdoor-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=SuperCasdoor123
+      - MYSQL_DATABASE=casdoor
+    volumes:
+      - ./data/casdoor-db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+
+  # 5. Identité : Casdoor
+  casdoor:
+    image: casbin/casdoor:latest
+    container_name: cystis-casdoor
+    ports:
+      - "8080:8000"
+    volumes:
+      # On monte spécifiquement le fichier, pas le dossier entier
+      - ./data/casdoor/app.conf:/conf/app.conf
+    depends_on:
+      - casdoor-db
+    restart: unless-stopped

@@ -1,0 +1,26 @@
+cystis/
+├── infra/                  # Contient toute ton infrastructure
+│   ├── docker-compose.yml  # Le fichier magique pour MinIO, SurrealDB, Redis, Casdoor
+│   └── data/               # Dossier pour persister les données des conteneurs
+├── backend/                # Ton code Go
+│   ├── cmd/server/
+│   │   └── main.go         # Point d'entrée de ton API
+│   ├── internal/           # Logique métier et adapters (Hexagonal Architecture)
+│   │   ├── api/            # Routeurs, middlewares, handlers HTTP
+│   │   │   ├── middlewares/
+│   │   │   │   ├── auth.go
+│   │   │   ├── handlers/
+│   │   │   │   ├── file_handler.go
+│   │   │   │   └── folder_handler.go
+│   │   │   └── routes.go
+│   │   ├── core/           # Interfaces, modèles, logique de déduplication
+│   │   ├── infra/          # Connexions externes : SurrealDB, Redis, MinIO, Casdoor
+│   │   │   └── minio.go
+│   ├── go.mod              # Dépendances Go
+│   └── .env                # Variables d'environnement Backend
+└── frontend/               # Ton code SvelteKit
+    ├── src/
+    │   ├── lib/            # Composants UI (Tailwind), utilitaires, stores
+    │   └── routes/         # Pages SvelteKit (explorateur de fichiers, login)
+    ├── tailwind.config.js
+    └── package.json

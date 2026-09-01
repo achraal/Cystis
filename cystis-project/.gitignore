@@ -1,0 +1,12 @@
+# Ignorer les données de l'infrastructure (Bases de données et configs locales)
+infra/data/
+
+# Ignorer les variables d'environnement du backend
+backend/.env
+
+# Ignorer les binaires Go
+backend/cystis-backend.exe
+backend/cystis-backend
+
+# Ignorer les modules Node (pour le frontend plus tard)
+frontend/node_modules/
